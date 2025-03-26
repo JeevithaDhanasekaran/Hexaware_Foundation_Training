@@ -469,29 +469,167 @@ select
 from payment p where paymentDate=@payDate;
 
 -- 29. Get Courier Information for Each Payment 
+select * from courier where courierID in (select courierID from payment);
+
 -- 30. Get Payment Details with Location 
+select p.paymentID,
+	p.courierID,
+    p.LocationID,
+	(select l.locationName from location l where l.locationID=p.locationID )as LocationName,
+    p.amount,
+    p.paymentDate 
+from payment p;
+
 -- 31. Calculating Total Payments for Each Courier 
+select 
+c.courierID,
+c.senderName,
+sum(p.amount) as totalAmount
+from courier c join payment p using (courierID)
+group by courierID; 
+
 -- 32. List Payments Within a Date Range 
+set @startDate='2025-03-25';
+set @endDate='2025-03-27';
+select * from payment;
+select
+	p.paymentID,
+    p.courierID,
+    c.trackingNumber,
+    p.locationID,
+    l.locationName,
+    p.paymentDate
+from payment p 
+	join courier c on (p.courierID=c.courierID)
+    join location l on (p.locationID = l.locationID)
+where p.paymentDate between @startDate and @endDate;
+
 -- 33. Retrieve a list of all users and their corresponding courier records, including cases where there are 
 -- no matches on either side 
+INSERT INTO User (Name, Email, Password, ContactNumber, Address) VALUES
+('Nina Dobrev', 'nina@example.com', 'ninaadobrev', '764529753', '123 cross St, City t');
+
+select
+u.userID,
+u.Name,
+u.email,
+u.contactnumber,
+u.address,
+c.courierID,
+c.trackingNumber
+from user u left join orders o using (userID)
+left join courier c using (courierID);
+
 -- 34. Retrieve a list of all couriers and their corresponding services, including cases where there are no 
 -- matches on either side 
+select
+	c.courierID,
+    concat(c.senderName,' / ',c.senderAddress) as senderDetail,
+	concat(c.receiverName,' / ',c.receiverAddress) as receiverDetail,
+    c.weight,
+    c.TrackingNumber,
+    p.Amount,
+    p.paymentDate,
+    l.locationName
+from courier c
+	left join payment p using (courierID)
+    left join location l using (locationID);
+
 -- 35. Retrieve a list of all employees and their corresponding payments, including cases where there are 
 -- no matches on either side 
--- 36. List all users and all courier services, showing all possible combinations. 
--- 37. List all employees and all locations, showing all possible combinations: 
--- 38. Retrieve a list of couriers and their corresponding sender information (if available) 
--- 39. Retrieve a list of couriers and their corresponding receiver information (if available): 
--- 40. Retrieve a list of couriers along with the courier service details (if available): 
--- 41. Retrieve a list of employees and the number of couriers assigned to each employee: 
--- 42. Retrieve a list of locations and the total payment amount received at each location: 
--- 43. Retrieve all couriers sent by the same sender (based on SenderName). 
--- 44. List all employees who share the same role. 
--- 45. Retrieve all payments made for couriers sent from the same location. 
--- 46. Retrieve all couriers sent from the same location (based on SenderAddress). 
--- 47. List employees and the number of couriers they have delivered: 
--- 48. Find couriers that were paid an amount greater than the cost of their respective courier services 
+INSERT INTO Employee (Name, Email, ContactNumber, Role, Salary) VALUES
+('Merlin monroe', 'merlin@courier.com', '91234567832', 'sales executive', 30000);
 
+select * from employee e left join courier c 
+	on e.employeeID=c.assignedTO left join payment p on p.courierID=c.courierID;
+
+-- 36. List all users and all courier services, showing all possible combinations. 
+select * from user cross join courier;
+
+-- 37. List all employees and all locations, showing all possible combinations: 
+select * from employee cross join location;
+
+-- 38. Retrieve a list of couriers and their corresponding sender information (if available) 
+select 
+	courierID,
+    senderName,
+    senderAddress,
+    weight,
+    Status,
+    TrackingNumber
+from courier;
+
+-- 39. Retrieve a list of couriers and their corresponding receiver information (if available): 
+select 
+	courierID,
+    receiverName,
+    receiverAddress,
+    weight,
+    Status,
+    TrackingNumber
+from courier;
+
+-- 40. Retrieve a list of couriers along with the courier service details (if available): 
+select * from courier join employee on courier.assignedTo=employee.employeeID;
+
+-- 41. Retrieve a list of employees and the number of couriers assigned to each employee: 
+select 
+	e.employeeID,
+    e.name,
+    count(c.assignedTo)as numberOfCouriers 
+from employee e join courier c on e.employeeID=c.assignedTo
+group by e.employeeID;
+
+-- 42. Retrieve a list of locations and the total payment amount received at each location: 
+select 
+	l.locationID,
+    l.locationName,
+    ifnull(sum(p.amount),0)as totalPayment
+from location l left join payment p using (locationID) 
+group by l.locationID;
+
+-- 43. Retrieve all couriers sent by the same sender (based on SenderName). 
+set @senderName='John Doe';
+select * from courier where senderName=@senderName;
+
+-- 44. List all employees who share the same role. 
+select * from employee where role like '%Executive%';
+
+-- 45. Retrieve all payments made for couriers sent from the same location. 
+INSERT INTO Courier (SenderName, SenderAddress, ReceiverName, ReceiverAddress, Weight, Status, TrackingNumber, DeliveryDate) VALUES
+('riya jose', '123 Main St, City A', 'marie Smith', '406 Elm St, City g', 2.50, 'In Transit', 'TRK12234', '2025-03-26');
+INSERT INTO Payment (CourierID, LocationID, Amount, PaymentDate) VALUES
+(7, 4, 660.00, '2025-03-28');
+select
+	p.paymentID,
+    p.courierID,
+    c.senderAddress,
+    p.amount,
+    p.paymentDate
+from payment p join courier c using (courierID)
+where c.senderAddress in ( select senderAddress from courier group by senderAddress having count(*)>1 )
+;
+select * from courier;
+select * from payment;
+
+-- 46. Retrieve all couriers sent from the same location (based on SenderAddress). 
+select
+	p.paymentID,
+    p.courierID,
+    c.senderAddress,
+    p.amount,
+    p.paymentDate
+from payment p join courier c using (courierID)
+where c.senderAddress in ( select senderAddress from courier group by senderAddress having count(*)>1 )
+;
+
+-- 47. List employees and the number of couriers they have delivered: 
+select 
+	e.employeeID,
+    e.name,
+    count(c.courierID)as numberOfCouriers
+from employee e join courier c on e.employeeID=c.assignedTo
+group by e.employeeID;
 
 -- Scope: Inner Queries, Non Equi Joins, Equi joins,Exist,Any,All 
 -- 49. Find couriers that have a weight greater than the average weight of all couriers 
