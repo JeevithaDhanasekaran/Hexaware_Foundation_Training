@@ -6,25 +6,25 @@ USE CareerHub;
 DROP DATABASE CareerHub;
 -- 2. Create tables for Companies, Jobs, Applicants and Applications. 
 -- Create Companies Table
-CREATE TABLE IF NOT EXISTS Companies (
+CREATE TABLE IF NOT EXISTS Companies(
     companyID INT PRIMARY KEY AUTO_INCREMENT,
     companyName VARCHAR(255) NOT NULL,
     location VARCHAR(255) NOT NULL
 );
 
--- Create Jobs Table
-CREATE TABLE IF NOT EXISTS Jobs (
+
+CREATE TABLE IF NOT EXISTS Jobs(
     jobID INT PRIMARY KEY AUTO_INCREMENT,
     jobTitle VARCHAR(255) NOT NULL,
     jobDescription TEXT NOT NULL,
     jobLocation VARCHAR(255) NOT NULL,
     salary DECIMAL(10,2) CHECK (Salary >= 0),
     jobType ENUM('Full-time', 'Part-time', 'Contract', 'Internship') DEFAULT 'Full-time',
-    postedDate DATETIME DEFAULT CURRENT_TIMESTAMP
+    postedDate DATETIME DEFAULT CURRENT_TIMESTAMP 
 );
 
--- Linking Table: JobPostings (Associates Jobs with Companies)
-CREATE TABLE IF NOT EXISTS JobPostings (
+
+CREATE TABLE IF NOT EXISTS JobPostings(
     jobID INT PRIMARY KEY,
     companyID INT NOT NULL,
     FOREIGN KEY (JobID) REFERENCES Jobs(JobID) ON DELETE CASCADE,
@@ -65,24 +65,24 @@ CREATE INDEX idx_application_date ON Applications(applicationDate);
 
 /*
 table relationship:
-one Company can post many Jobs → 1-to-Many (Companies → Jobs)
-One Job can have multiple Applications → 1-to-Many (Jobs → Applications)
-One Applicant can apply to multiple Jobs → 1-to-Many (Applicants → Applications)
+one Company can post many Jobs -> 1-to-Many (Companies → Jobs)
+One Job can have multiple Applications -> 1-to-Many (Jobs → Applications)
+One Applicant can apply to multiple Jobs -> 1-to-Many (Applicants → Applications)
 JobPostings (Links Companies & Jobs)
 JobApplications (Links Jobs & Applications)
 */
 
-INSERT INTO Companies (companyName, location) VALUES
-('HexaTech', 'New York'),
-('InnovateX', 'San Francisco'),
-('CodeSphere', 'Seattle'),
-('ByteWorks', 'Chicago'),
-('NexaSoft', 'Los Angeles'),
-('CyberNest', 'Austin'),
-('Quantum Systems', 'Boston'),
-('DevPeak', 'Denver'),
-('TechPioneers', 'Miami'),
-('AI Edge', 'Dallas');
+INSERT INTO Companies (companyName,location) VALUES
+('HexaTech','New York'),
+('InnovateX','San Francisco'),
+('CodeSphere','Seattle'),
+('ByteWorks','Chicago'),
+('NexaSoft','Los Angeles'),
+('CyberNest','Austin'),
+('Quantum Systems','Boston'),
+('DevPeak','Denver'),
+('TechPioneers','Miami'),
+('AI Edge','Dallas');
 
 INSERT INTO Jobs (jobTitle, jobDescription, jobLocation, salary, jobType, postedDate) VALUES
 ('Software Engineer', 'Develop and maintain software applications.', 'New York', 90000.00, 'Full-time', '2025-03-10 10:30:00'),
@@ -173,9 +173,10 @@ WHERE salary BETWEEN @minSal AND @maxSal;
 -- 7. Write an SQL query that retrieves the job application history for a specific applicant. Allow a 
 -- parameter for the ApplicantID, and return a result set with the job titles, company names, and 
 -- application dates for all the jobs the applicant has applied to.
-SET @applicantID = 3; 
+SET @applicantID = 1; 
 
 SELECT 
+	ja.jobID,
     j.jobTitle,
     c.companyName,
     a.applicationDate
