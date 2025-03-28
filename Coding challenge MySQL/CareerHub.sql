@@ -60,8 +60,7 @@ CREATE TABLE IF NOT EXISTS JobApplications (
 -- 4. Ensure the script handles potential errors, such as if the database or tables already exist.
 
 CREATE INDEX idx_job_location ON Jobs(jobLocation);
-CREATE INDEX idx_applicant_email ON Applicants(email);
-CREATE INDEX idx_application_date ON Applications(applicationDate);
+
 
 /*
 table relationship:
