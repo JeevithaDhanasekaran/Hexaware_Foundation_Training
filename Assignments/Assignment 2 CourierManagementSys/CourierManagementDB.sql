@@ -671,3 +671,51 @@ having totalAmount=(
 -- (e.g., 'SenderName'):
 select * from courier where weight =(
 select max(totWeight) from (select sum(weight) as totWeight from courier group by courierID) as maxWeight);
+
+
+-- Practice Questions for IN, ANY, ALL, and EXISTS
+-- 1. IN (Matching values within a list)
+-- Retrieve all couriers that have been sent to locations with LocationID 1, 3, or 5.
+select * from courier c left join payment p using (courierID) left join location l using(locationID) where p.locationID in (1,3,5);
+
+-- List all users whose email belongs to the domains 'gmail.com', 'yahoo.com', or 'outlook.com'.
+select * from user where email
+like '%@gmail.com' or email like '%@example.com' or email like '@outlook.com';
+select * from user;
+
+-- 2. ANY (Comparison with any value in a subquery result)
+-- Find couriers whose total payment is greater than any of the payments made for location ID = 2.
+select * from courier c join payment p using (courierID) where p.amount > any(select amount from payment where locationID=3);
+
+-- Retrieve employees who have a salary less than any employee in the Manager role.
+select * from employee where salary < all(select salary from employee where role='Delivery Executive');
+select * from employee;
+
+-- 3. ALL (Comparison must hold for all values in a subquery result)
+-- Find couriers whose total payment is greater than all payments made for location ID = 3.
+select * from courier c join payment p using (courierID) where p.amount > all(select amount from payment where locationID=5);
+
+-- Retrieve employees whose salary is higher than all employees in the Intern role.
+select * from employee where salary > all(select salary from employee where role='Delivery Executive');
+
+-- 4. EXISTS (Checks if records exist in a subquery)
+-- Find all users who have placed at least one order.
+select * from user u where exists(select 1 from orders o where o.userID=u.userID group by o.userID having count(o.orderID)>=1);
+ 
+select * from user;
+
+-- Retrieve all locations where payments have been made.
+select * from location l where exists(select 1 from payment p where p.locationID=l.locationID and p.amount is not null);
+
+-- retrieve the employee in each role whose salary is greater than any other employee in the same role
+SELECT e1.*
+FROM employee e1
+JOIN employee e2 
+ON e1.role = e2.role 
+AND e1.salary > e2.salary;
+
+select e1.* from employee e1 where salary > all(
+select salary from employee e2 where e1.employeeID <> e2.employeeID and e1.role=e2.role
+);
+
+select * from employee;
