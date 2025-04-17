@@ -1,9 +1,15 @@
 -- CODING CHALLENGE MYSQL
 -- TASKS:
 -- 1.Provide a SQL script that initializes the database for the Job Board scenario “CareerHub”.
+<<<<<<< HEAD
 create database if not exists careerhub;
 use careerhub;
 
+=======
+CREATE DATABASE IF NOT EXISTS CareerHub;
+USE CareerHub;
+DROP DATABASE CareerHub;
+>>>>>>> 4da488a4a1991f29b390b3020a355bb95001685d
 -- 2. Create tables for Companies, Jobs, Applicants and Applications. 
 -- Create Companies Table
 CREATE TABLE IF NOT EXISTS Companies(
@@ -390,5 +396,9 @@ SELECT
 FROM Applicants a
 CROSS JOIN Companies c
 WHERE c.location = @city
+<<<<<<< HEAD
 AND a.yrsExperience > 2;
 
+=======
+AND a.yrsExperience > 2;
+>>>>>>> 4da488a4a1991f29b390b3020a355bb95001685d

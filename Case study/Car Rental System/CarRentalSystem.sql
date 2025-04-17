@@ -147,6 +147,8 @@ select * from carstatus;
 select * from vehicleCity;
 select * from payments;
 select * from leases;
+SELECT * FROM CarStatus WHERE vehicleID = 1;
+
 
 delete from vehicles where vehicleID=4;
 
@@ -193,10 +195,10 @@ INSERT INTO VehicleCity (vehicleID, cityID) VALUES
 (4, 2);
 
 INSERT INTO HostVehicle (hostCustomerID, vehicleID) VALUES 
-(3, 1),
-(3, 2),
-(4, 3),
-(4, 4);
+(1, 1),
+(1, 2),
+(2, 3),
+(2, 4);
 
 
 INSERT INTO CarStatus (vehicleID, status) VALUES 
@@ -205,8 +207,14 @@ INSERT INTO CarStatus (vehicleID, status) VALUES
 (3, 'AVAILABLE'),
 (4, 'AVAILABLE');
 
+INSERT INTO Customers (firstName, lastName, licenceNumber) VALUES 
+('priya', 'john', 'DL1234552');
 
+INSERT INTO ContactInfo (customerID, email, phoneNumber, address, role) VALUES 
+(5, 'priya@gmail.com', '8776654543', 'Street A,Chennai', 'CUSTOMER');
 
+INSERT INTO Auth (customerID, username, password) VALUES 
+(5, 'priya', 'priya123');
 
 
 
